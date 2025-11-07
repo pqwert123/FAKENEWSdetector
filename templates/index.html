@@ -6,7 +6,7 @@
   <title>Fake News Detector — Pratima Sahu</title>
 
   <style>
-    :root{
+    :root {
       --accent: #007bff;
       --card: rgba(255,255,255,0.06);
       --glass: rgba(255,255,255,0.06);
@@ -18,7 +18,7 @@
       height: 100%;
       margin: 0;
       font-family: "Segoe UI", Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg,#071428 0%, #06223a 100%);
+      background: linear-gradient(180deg, #071428 0%, #06223a 100%);
       color: #fff;
     }
 
@@ -153,12 +153,12 @@
     }
 
     .real {
-      background: linear-gradient(90deg,#27ae60,#2ecc71);
+      background: linear-gradient(90deg, #27ae60, #2ecc71);
       color: #042c12;
     }
 
     .fake {
-      background: linear-gradient(90deg,#e74c3c,#ff6b6b);
+      background: linear-gradient(90deg, #e74c3c, #ff6b6b);
       color: #3b0000;
     }
 
@@ -214,19 +214,15 @@
       <div class="left">
         <div class="info-card">
           <label for="news" style="font-weight:700;">Paste news headline or article text</label>
-          <form action="/predict" method="post" id="predictForm">
-            <textarea id="news" name="news" placeholder="Type or paste the news text here..." required>{{ text if text else '' }}</textarea>
+
+          <form id="predictForm" onsubmit="return detectFakeNews(event)">
+            <textarea id="news" name="news" placeholder="Type or paste the news text here..." required></textarea>
             <br>
             <button class="btn" type="submit">Detect</button>
             <div class="hint">Tip: paste headline or short paragraph. Model shows prediction and confidence.</div>
           </form>
 
-          {% if prediction %}
-            <div class="result {{ 'real' if prediction == 'REAL' else 'fake' }}">
-              {{ '✅ This news seems REAL' if prediction == 'REAL' else '⚠️ This news seems FAKE' }}
-            </div>
-            <div class="score">Confidence: {{ "%.2f"|format(confidence if confidence is defined else 0) }}</div>
-          {% endif %}
+          <div id="liveResult"></div>
         </div>
 
         <div style="display:flex; gap:12px; margin-top:14px;">
@@ -264,7 +260,7 @@
             <ol style="color:rgba(255,255,255,0.85); padding-left:18px; margin:0;">
               <li>Paste headline or short article.</li>
               <li>Click <b>Detect</b>.</li>
-              <li>See prediction and confidence score.</li>
+              <li>See prediction and confidence score instantly.</li>
               <li>For mobile, open URL and “Add to Home screen”.</li>
             </ol>
           </div>
@@ -289,5 +285,49 @@
       </div>
     </footer>
   </div>
+
+  <!-- JS Logic for AJAX Detection -->
+  <script>
+    async function detectFakeNews(event) {
+      event.preventDefault(); // stop page reload
+      const text = document.getElementById("news").value.trim();
+      const resultDiv = document.getElementById("liveResult");
+
+      if (!text) {
+        resultDiv.innerHTML = "<div class='result fake'>⚠️ Please enter some text!</div>";
+        return;
+      }
+
+      resultDiv.innerHTML = "<div class='result' style='background:rgba(255,255,255,0.05);'>⏳ Analyzing...</div>";
+
+      try {
+        const res = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          resultDiv.innerHTML = `<div class='result fake'>❌ Error: ${data.error}</div>`;
+          return;
+        }
+
+        const label = data.label ? data.label.toUpperCase() : "UNKNOWN";
+        const conf = data.confidence ? (data.confidence * 100).toFixed(2) : "N/A";
+
+        if (label === "REAL") {
+          resultDiv.innerHTML = `<div class='result real'>✅ This news seems REAL</div>
+                                 <div class='score'>Confidence: ${conf}%</div>`;
+        } else {
+          resultDiv.innerHTML = `<div class='result fake'>⚠️ This news seems FAKE</div>
+                                 <div class='score'>Confidence: ${conf}%</div>`;
+        }
+      } catch (err) {
+        resultDiv.innerHTML = `<div class='result fake'>⚠️ Network error: ${err.message}</div>`;
+      }
+    }
+  </script>
 </body>
 </html>

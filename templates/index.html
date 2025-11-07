@@ -92,7 +92,9 @@
 
     textarea#news {
       width: 100%;
-      min-height: 190px;
+      min-height: 400px;     /* bada area for large text */
+      max-height: 700px;     /* prevent full page takeover */
+      overflow-y: scroll;    /* scrollbar for long articles */
       padding: 14px;
       resize: vertical;
       border-radius: 12px;
@@ -101,7 +103,8 @@
       color: #fff;
       font-size: 1rem;
       outline: none;
-    }
+      word-wrap: break-word;  /* long lines wrap karenge */
+}
 
     .btn {
       display: inline-block;

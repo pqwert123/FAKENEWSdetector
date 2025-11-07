@@ -1,12 +1,17 @@
 /* style.css – Pratima Sahu (Fake News Detector UI) */
 
+/* ===== Global Theme ===== */
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: linear-gradient(180deg, #08142c, #0a2340);
+  background: linear-gradient(180deg, #08142c 0%, #0a2340 100%);
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
+/* ===== Container ===== */
 .container {
   max-width: 900px;
   margin: 60px auto;
@@ -14,67 +19,106 @@ body {
   text-align: center;
 }
 
+/* ===== Header ===== */
 h1 {
-  font-size: 2.2rem;
-  margin-bottom: 10px;
+  font-size: 2.3rem;
+  margin: 10px 0;
+  text-shadow: 0 0 10px rgba(0,123,255,0.5);
 }
 
 .logo {
   width: 80px;
-  border-radius: 10px;
+  height: 80px;
+  border-radius: 12px;
   background: #fff;
   padding: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  object-fit: contain;
 }
 
+/* ===== Textarea ===== */
 textarea {
   width: 90%;
   min-height: 140px;
   padding: 12px;
   border-radius: 10px;
-  border: none;
-  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
   color: #fff;
   font-size: 1rem;
   outline: none;
   resize: vertical;
+  transition: background 0.3s ease, border 0.3s ease;
 }
 
+textarea:focus {
+  background: rgba(255,255,255,0.12);
+  border-color: #007bff;
+}
+
+/* ===== Button ===== */
 button {
   margin-top: 16px;
-  background-color: #007bff;
+  background: linear-gradient(90deg, #007bff, #0056b3);
   color: white;
   padding: 12px 22px;
   border: none;
   border-radius: 10px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s ease;
+  box-shadow: 0 8px 16px rgba(0,123,255,0.25);
+  transition: all 0.3s ease;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background: linear-gradient(90deg, #0056b3, #004080);
+  transform: translateY(-2px);
 }
 
+/* ===== Loader ===== */
+#loader {
+  margin-top: 18px;
+  display: none;
+}
+
+#loader img {
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ===== Results ===== */
 .result {
   margin-top: 25px;
   font-size: 1.2rem;
   font-weight: bold;
   border-radius: 10px;
-  padding: 10px;
+  padding: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 .real {
-  background-color: #27ae60;
+  background: linear-gradient(90deg, #27ae60, #2ecc71);
   color: #fff;
 }
 
 .fake {
-  background-color: #e74c3c;
+  background: linear-gradient(90deg, #e74c3c, #ff6b6b);
   color: #fff;
 }
 
+/* ===== Footer ===== */
 footer {
-  margin-top: 40px;
+  margin-top: auto;
+  padding: 20px 0;
   color: rgba(255,255,255,0.7);
   font-size: 0.9rem;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
+

@@ -3,334 +3,240 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fake News Detector — Pratima Sahu</title>
+  <title>AI Fake News Detector — Pratima Sahu</title>
 
   <style>
     :root {
       --accent: #007bff;
-      --card: rgba(255,255,255,0.06);
-      --glass: rgba(255,255,255,0.06);
-      --card-white: #fff;
-      --text-dark: #133;
+      --card: rgba(255, 255, 255, 0.07);
+      --text-light: #d0d8e8;
+      --bg-dark: linear-gradient(180deg, #08142c, #0a2340);
     }
 
-    html, body {
-      height: 100%;
+    body {
       margin: 0;
-      font-family: "Segoe UI", Roboto, Arial, sans-serif;
-      background: linear-gradient(180deg, #071428 0%, #06223a 100%);
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--bg-dark);
       color: #fff;
     }
 
     .container {
-      max-width: 1100px;
-      margin: 30px auto 40px;
-      padding: 20px;
+      max-width: 1000px;
+      margin: 60px auto;
+      padding: 25px;
+      text-align: center;
     }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .logo {
-      width: 72px;
-      height: 72px;
-      border-radius: 12px;
-      background: #fff;
-      padding: 6px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-      object-fit: contain;
-    }
-
-    .titlebox { flex: 1; }
 
     h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      letter-spacing: 0.4px;
-      text-shadow: 0 0 8px rgba(0,123,255,0.6);
-    }
-
-    .subtitle {
-      margin: 6px 0 0;
-      color: rgba(255,255,255,0.8);
-      font-size: 0.95rem;
-    }
-
-    .meta {
-      text-align: right;
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.85);
-    }
-    .meta small {
-      display: block;
-      color: rgba(255,255,255,0.6);
-    }
-
-    .maincard {
-      margin-top: 24px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border-radius: 18px;
-      padding: 26px;
-      box-shadow: 0 15px 40px rgba(2,6,23,0.6);
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-    }
-
-    .left { flex: 1.1; min-width: 300px; }
-    .right { flex: 0.9; min-width: 260px; }
-
-    textarea#news {
-      width: 100%;
-      min-height: 190px;
-      padding: 14px;
-      resize: vertical;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.02);
+      font-size: 2.4em;
       color: #fff;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    .btn {
-      display: inline-block;
-      margin-top: 14px;
-      padding: 12px 20px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, var(--accent), #0056b3);
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0,123,255,0.18);
-      font-weight: 600;
-    }
-
-    .hint {
-      color: rgba(255,255,255,0.7);
-      font-size: 0.9rem;
-      margin-top: 8px;
-    }
-
-    .info-card {
-      background: rgba(255,255,255,0.03);
-      border-radius: 12px;
-      padding: 14px;
-      color: rgba(255,255,255,0.95);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
-    }
-
-    .image-preview {
-      width: 100%;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-bottom: 12px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-    }
-
-    .image-preview img {
-      width: 100%;
-      display: block;
-      object-fit: cover;
-    }
-
-    .result {
-      margin-top: 16px;
-      padding: 14px;
-      border-radius: 10px;
       font-weight: 700;
-      text-align: center;
+      margin-bottom: 10px;
     }
 
-    .real {
-      background: linear-gradient(90deg, #27ae60, #2ecc71);
-      color: #042c12;
+    p.subtitle {
+      color: var(--text-light);
+      font-size: 1.1em;
+      margin-bottom: 40px;
     }
 
-    .fake {
-      background: linear-gradient(90deg, #e74c3c, #ff6b6b);
-      color: #3b0000;
+    .input-section {
+      background: var(--card);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      text-align: left;
     }
 
-    .score {
-      margin-top: 8px;
+    label {
+      font-size: 1.2em;
       font-weight: 600;
-      color: rgba(255,255,255,0.95);
+      margin-bottom: 10px;
+      display: block;
     }
 
-    footer.bottom {
-      margin-top: 28px;
+    textarea {
+      width: 100%;
+      height: 320px; /* Increased size for large text */
+      border: none;
+      outline: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1em;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      resize: vertical;
+    }
+
+    textarea::placeholder {
+      color: #c8d0e0;
+    }
+
+    button {
+      margin-top: 20px;
+      background: var(--accent);
+      border: none;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-size: 1em;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #005fd1;
+    }
+
+    .result-section {
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 1.2em;
+      font-weight: 500;
+    }
+
+    .tip {
+      font-size: 0.9em;
+      color: #aebcd0;
+      margin-top: 15px;
       text-align: center;
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.75);
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 30px;
+    /* About Section */
+    .about {
+      margin-top: 60px;
+      background: var(--card);
+      border-radius: 15px;
+      padding: 30px;
+      text-align: left;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
 
-    @media (max-width:900px) {
-      .maincard { flex-direction: column; }
-      .meta { text-align: left; margin-top: 8px; }
+    .about h2 {
+      font-size: 1.6em;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+
+    .about p {
+      color: var(--text-light);
+      line-height: 1.7;
+      font-size: 1.05em;
+      margin-bottom: 10px;
+    }
+
+    .img-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .img-row img {
+      width: 180px;
+      height: 120px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.2);
+      transition: transform 0.3s;
+    }
+
+    .img-row img:hover {
+      transform: scale(1.05);
+    }
+
+    footer {
+      margin-top: 50px;
+      font-size: 1em;
+      color: #d0d8e8;
+      line-height: 1.6;
+    }
+
+    footer strong {
+      color: #fff;
+      font-size: 1.05em;
     }
   </style>
 </head>
-
 <body>
   <div class="container">
-    <!-- Top bar -->
-    <div style="display:flex; align-items:center; justify-content:space-between;">
-      <div class="topbar">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="College Logo" class="logo">
-        <div class="titlebox">
-          <h1>Fake News Detector</h1>
-          <div class="subtitle">AI-based news authenticity checker — live demo</div>
-        </div>
-      </div>
+    <h1>🧠 AI Fake News Detector</h1>
+    <p class="subtitle">Detect misinformation using Machine Learning and Natural Language Processing</p>
 
-      <div class="meta">
-        <div><strong>Pratima Sahu</strong></div>
-        <small>Batch: 2023–27 — B.Tech EEIOT</small>
+    <div class="input-section">
+      <label for="news">Paste your full news article or paragraph below:</label>
+      <textarea id="news" placeholder="Paste or type your article text here..."></textarea>
+      <button id="detectBtn">Detect</button>
+      <div id="result" class="result-section"></div>
+      <p class="tip">You can paste long articles (even 20,000+ words) — the AI model will analyze and predict authenticity.</p>
+    </div>
+
+    <div class="about">
+      <h2>📘 About this Demo</h2>
+      <p>
+        This AI-powered application predicts whether a given news article is <strong>real</strong> or <strong>fake</strong>
+        using advanced Natural Language Processing (NLP) techniques. The model is trained on a large dataset of verified
+        and misleading news samples using <strong>TF-IDF Vectorization</strong> and <strong>Logistic Regression</strong>.
+      </p>
+      <p>
+        The system analyzes linguistic patterns, writing tone, and contextual cues to identify potential misinformation.
+        It provides a clear label with a confidence percentage, ensuring users understand the reliability of each prediction.
+      </p>
+      <p>
+        Developed by <strong>Pratima Sahu</strong> as part of her academic journey in <strong>B.Tech EEIOT (Batch: 2023–27)</strong>,
+        this project demonstrates how Artificial Intelligence can be applied to promote truth verification and digital awareness.
+      </p>
+
+      <div class="img-row">
+        <img src="https://cdn.pixabay.com/photo/2019/04/29/13/26/fake-news-4165717_960_720.jpg" alt="Fake news concept">
+        <img src="https://cdn.pixabay.com/photo/2018/01/11/19/27/fake-3071842_960_720.jpg" alt="AI analyzing text">
+        <img src="https://cdn.pixabay.com/photo/2022/10/09/10/34/ai-7509091_960_720.jpg" alt="Artificial Intelligence">
       </div>
     </div>
 
-    <!-- Main Card -->
-    <div class="maincard" role="region" aria-label="Fake news detection">
-      <div class="left">
-        <div class="info-card">
-          <label for="news" style="font-weight:700;">Paste news headline or article text</label>
-
-          <form id="predictForm" onsubmit="return detectFakeNews(event)">
-            <textarea id="news" name="news" placeholder="Type or paste the news text here..." required></textarea>
-            <br>
-            <button class="btn" type="submit">Detect</button>
-            <div class="hint">Tip: paste headline or short paragraph. Model shows prediction and confidence.</div>
-          </form>
-
-          <div id="liveResult"></div>
-        </div>
-
-        <div style="display:flex; gap:12px; margin-top:14px;">
-          <div style="flex:1;">
-            <div class="image-preview">
-              <img src="{{ url_for('static', filename='images/fake_news_example.jpg') }}" alt="Fake news example">
-            </div>
-            <div style="color:rgba(255,255,255,0.85); font-weight:600;">Example: Fake news headline</div>
-            <div style="color:rgba(255,255,255,0.6); font-size:0.9rem;">Use this to test detection.</div>
-          </div>
-
-          <div style="flex:1;">
-            <div class="image-preview">
-              <img src="{{ url_for('static', filename='images/student.jpg') }}" alt="Students">
-            </div>
-            <div style="color:rgba(255,255,255,0.85); font-weight:600;">Students / Classroom</div>
-            <div style="color:rgba(255,255,255,0.6); font-size:0.9rem;">Project by Pratima Sahu — 2023–27</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="right">
-        <div class="info-card">
-          <h3 style="margin-top:0;">About this Demo</h3>
-          <p style="margin:6px 0; color:rgba(255,255,255,0.85);">
-            This app uses a TF-IDF vectorizer and a trained classifier to predict whether a news piece is real or fake.
-            Deployed on Render with Flask.
-          </p>
-          <hr style="border:none; border-top:1px solid rgba(255,255,255,0.04); margin:12px 0;">
-          <p><strong>Model:</strong> Logistic Regression / Random Forest</p>
-          <p><strong>Input:</strong> Plain text (headline or paragraph)</p>
-
-          <div style="margin-top:12px;">
-            <div style="font-weight:700; margin-bottom:8px;">How to demo</div>
-            <ol style="color:rgba(255,255,255,0.85); padding-left:18px; margin:0;">
-              <li>Paste headline or short article.</li>
-              <li>Click <b>Detect</b>.</li>
-              <li>See prediction and confidence score instantly.</li>
-              <li>For mobile, open URL and “Add to Home screen”.</li>
-            </ol>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bottom">
-      <div class="badge">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="logo" style="width:34px; height:34px; border-radius:8px;">
-        <div style="text-align:left;">
-          <div style="font-weight:700; color:#fff;">Pratima Sahu</div>
-          <div style="font-size:0.85rem; color:rgba(255,255,255,0.75);">
-            B.Tech EEIOT • Batch 2023–27 • Madhav Institute of Technology & Science, Gwalior
-          </div>
-        </div>
-      </div>
-
-      <div style="margin-top:8px; color:rgba(255,255,255,0.6); font-size:0.85rem;">
-        Demo for Placements • Built with Flask, scikit-learn & Deployed on Render.
-      </div>
+    <footer>
+      <strong>Pratima Sahu</strong><br>
+      Batch: 2023–27 — B.Tech EEIOT
     </footer>
   </div>
 
-  <!-- JS Logic -->
   <script>
-    async function detectFakeNews(event) {
-      event.preventDefault();
-      const text = document.getElementById("news").value.trim();
-      const resultDiv = document.getElementById("liveResult");
+    document.getElementById("detectBtn").addEventListener("click", async () => {
+      const newsText = document.getElementById("news").value.trim();
+      const resultDiv = document.getElementById("result");
 
-      if (!text) {
-        resultDiv.innerHTML = "<div class='result fake'>⚠️ Please enter some text!</div>";
-        return;
-      }
-      if (text.length > 20000) {
-        resultDiv.innerHTML = "<div class='result fake'>⚠️ Text too long! Paste shorter news content.</div>";
+      if (!newsText) {
+        resultDiv.innerHTML = "⚠️ Please paste some text before detecting.";
         return;
       }
 
-      resultDiv.innerHTML = "<div class='result' style='background:rgba(255,255,255,0.05);'>⏳ Analyzing...</div>";
+      resultDiv.innerHTML = "🔍 Analyzing... please wait.";
 
       try {
-        const apiURL = window.location.origin + "/predict";
-        const res = await fetch(apiURL, {
+        const formData = new FormData();
+        formData.append("news", newsText);
+
+        const response = await fetch("/predict", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text })
+          body: formData
         });
 
-        if (!res.ok) {
-          const textResponse = await res.text();
-          throw new Error(`Server Error ${res.status}: ${textResponse}`);
-        }
-
-        const data = await res.json();
+        const data = await response.json();
 
         if (data.error) {
-          resultDiv.innerHTML = `<div class='result fake'>❌ Error: ${data.error}</div>`;
-          return;
-        }
-
-        const label = data.label ? data.label.toUpperCase() : "UNKNOWN";
-        const conf = data.confidence ? (data.confidence * 100).toFixed(2) : "N/A";
-
-        if (label === "REAL") {
-          resultDiv.innerHTML = `<div class='result real'>✅ This news seems REAL</div>
-                                 <div class='score'>Confidence: ${conf}%</div>`;
+          resultDiv.innerHTML = "❌ Error: " + data.error;
         } else {
-          resultDiv.innerHTML = `<div class='result fake'>⚠️ This news seems FAKE</div>
-                                 <div class='score'>Confidence: ${conf}%</div>`;
+          resultDiv.innerHTML = `<strong>${data.label}</strong><br><small>Confidence: ${data.confidence}</small>`;
         }
       } catch (err) {
-        resultDiv.innerHTML = `<div class='result fake'>⚠️ Network error: ${err.message}</div>`;
+        resultDiv.innerHTML = "❌ Network or server error.";
+        console.error(err);
       }
-    }
+    });
   </script>
 </body>
 </html>
+

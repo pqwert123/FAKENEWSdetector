@@ -1,14 +1,15 @@
 from flask import Flask, render_template, request, jsonify
-import pickle
-import os
+import pickle, os
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # allows big text input up to 5MB
 
-# Load ML model and vectorizer
+# Load model and vectorizer
 model = pickle.load(open("model.pkl", "rb"))
 vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+
 
 # Frontend route
 @app.route('/')
@@ -55,3 +56,4 @@ def predict():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+

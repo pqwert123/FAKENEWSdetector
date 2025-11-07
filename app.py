@@ -4,56 +4,89 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # allows big text input up to 5MB
 
-# Load model and vectorizer
-model = pickle.load(open("model.pkl", "rb"))
-vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+# Allow up to 5 MB text input
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  
+
+# Load model and vectorizer safely
+try:
+    model = pickle.load(open("model.pkl", "rb"))
+    vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+except Exception as e:
+    print("❌ Error loading model/vectorizer:", e)
+    model, vectorizer = None, None
 
 
+# =========================
 # Frontend route
+# =========================
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Backend API route (for JSON POST)
+
+# =========================
+# Backend API (JSON POST)
+# =========================
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # Case 1: if form data (HTML form)
+        # --- Step 1: Input Extraction ---
+        text = None
+
+        # If form data (from HTML form)
         if request.form.get("news"):
-            text = request.form['news']
+            text = request.form["news"]
+
+        # Else if raw JSON input
+        elif request.is_json:
+            data = request.get_json(silent=True)
+            if not data:
+                return jsonify({"error": "Invalid or empty JSON body"}), 400
+            text = data.get("text", "")
+
         else:
-            # Case 2: if JSON (frontend JS)
-            data = request.get_json()
-            text = data.get('text', '')
+            return jsonify({"error": "Unsupported input format"}), 400
 
-        if not text.strip():
-            return jsonify({"error": "No input text"}), 400
+        # --- Step 2: Input Validation ---
+        if not text or not text.strip():
+            return jsonify({"error": "No input text provided"}), 400
 
-        # Predict
+        if model is None or vectorizer is None:
+            return jsonify({"error": "Model not loaded properly"}), 500
+
+        # --- Step 3: Prediction ---
         vect = vectorizer.transform([text])
         pred = model.predict(vect)[0]
+        pred = str(pred)
 
-        # Confidence
+        # --- Step 4: Confidence ---
         confidence = None
         if hasattr(model, "predict_proba"):
-            prob = model.predict_proba(vect)
-            classes = list(model.classes_)
-            idx = classes.index(pred)
-            confidence = round(float(prob[0][idx]), 2)
+            try:
+                prob = model.predict_proba(vect)
+                classes = list(model.classes_)
+                idx = classes.index(pred)
+                confidence = float(prob[0][idx])
+            except Exception:
+                confidence = None
 
-        # If JSON request → return JSON
-        if request.is_json:
-            return jsonify({"label": pred, "confidence": confidence})
-        else:
-            # If form → render HTML
-            return render_template('index.html', prediction=pred, text=text, confidence=confidence)
+        # --- Step 5: Return JSON safely ---
+        return jsonify({
+            "label": pred,
+            "confidence": round(confidence, 2) if confidence is not None else None
+        })
+
     except Exception as e:
-        print("Error:", e)
+        print("❌ Error in /predict:", e)
         return jsonify({"error": str(e)}), 500
 
+
+# =========================
+# Run the app
+# =========================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=True)
+
 

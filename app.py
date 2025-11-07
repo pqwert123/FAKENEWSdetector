@@ -1,92 +1,88 @@
+# ===============================================
+# Fake News Detection Web App
+# Developed by: Pratima Sahu
+# College: Madhav Institute of Technology and Science (EEIoT)
+# ===============================================
+
 from flask import Flask, render_template, request, jsonify
-import pickle, os
-from flask_cors import CORS
+import pickle
+import numpy as np
+import re
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 
-app = Flask(__name__)
-CORS(app)
+# Initialize Flask App
+app = Flask(__name__, template_folder='./templates', static_folder='./static')
 
-# Allow up to 5 MB text input
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  
-
-# Load model and vectorizer safely
+# Load Trained Model and Vectorizer
 try:
-    model = pickle.load(open("model.pkl", "rb"))
-    vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+    model = pickle.load(open('model.pkl', 'rb'))
+    vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
+    print("✅ Model and Vectorizer loaded successfully!")
 except Exception as e:
-    print("❌ Error loading model/vectorizer:", e)
-    model, vectorizer = None, None
+    print("⚠️ Error loading model/vectorizer:", e)
+
+# Initialize NLP Tools
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
+
+# ========== Text Preprocessing Function ==========
+def clean_text(news):
+    news = re.sub(r'[^a-zA-Z\\s]', '', news)
+    news = news.lower()
+    tokens = nltk.word_tokenize(news)
+    filtered = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    return ' '.join(filtered)
+
+# ========== Prediction Function ==========
+def predict_news(news_text):
+    processed = clean_text(news_text)
+    vector_input = vectorizer.transform([processed])
+    prediction = model.predict(vector_input)[0]
+
+    # Confidence
+    if hasattr(model, "predict_proba"):
+        probs = model.predict_proba(vector_input)[0]
+        confidence = float(np.max(probs))
+    else:
+        confidence = 0.85  # fallback
+
+    label = "FAKE" if prediction == 1 else "REAL"
+    return label, round(confidence * 100, 2)
 
 
-# =========================
-# Frontend route
-# =========================
+# ========== ROUTES ==========
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
 
-# =========================
-# Backend API (JSON POST)
-# =========================
+@app.route('/predict_page')
+def predict_page():
+    return render_template('prediction.html')
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # --- Step 1: Input Extraction ---
-        text = None
+        data = request.get_json()
+        text = data.get('text', '')
 
-        # If form data (from HTML form)
-        if request.form.get("news"):
-            text = request.form["news"]
+        if not text.strip():
+            return jsonify({'label': 'Invalid Input', 'confidence': 0.0})
 
-        # Else if raw JSON input
-        elif request.is_json:
-            data = request.get_json(silent=True)
-            if not data:
-                return jsonify({"error": "Invalid or empty JSON body"}), 400
-            text = data.get("text", "")
-
-        else:
-            return jsonify({"error": "Unsupported input format"}), 400
-
-        # --- Step 2: Input Validation ---
-        if not text or not text.strip():
-            return jsonify({"error": "No input text provided"}), 400
-
-        if model is None or vectorizer is None:
-            return jsonify({"error": "Model not loaded properly"}), 500
-
-        # --- Step 3: Prediction ---
-        vect = vectorizer.transform([text])
-        pred = model.predict(vect)[0]
-        pred = str(pred)
-
-        # --- Step 4: Confidence ---
-        confidence = None
-        if hasattr(model, "predict_proba"):
-            try:
-                prob = model.predict_proba(vect)
-                classes = list(model.classes_)
-                idx = classes.index(pred)
-                confidence = float(prob[0][idx])
-            except Exception:
-                confidence = None
-
-        # --- Step 5: Return JSON safely ---
-        return jsonify({
-            "label": pred,
-            "confidence": round(confidence, 2) if confidence is not None else None
-        })
+        label, confidence = predict_news(text)
+        return jsonify({'label': label, 'confidence': confidence})
 
     except Exception as e:
-        print("❌ Error in /predict:", e)
-        return jsonify({"error": str(e)}), 500
+        print("❌ Error:", e)
+        return jsonify({'label': 'Error', 'confidence': 0.0})
 
 
-# =========================
-# Run the app
-# =========================
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
+
 
 

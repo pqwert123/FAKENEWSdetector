@@ -7,132 +7,200 @@
 
   <style>
     :root {
-      --accent: #007bff;
-      --card: rgba(255, 255, 255, 0.07);
-      --text-light: #d0d8e8;
-      --bg-dark: linear-gradient(180deg, #08142c, #0a2340);
+      --bg1: #08142c;
+      --bg2: #0a2340;
+      --accent: #00b7ff;
+      --light: #cbd5e1;
+      --card: rgba(255,255,255,0.07);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
-      margin: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: var(--bg-dark);
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
       color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
     }
 
     .container {
-      max-width: 1000px;
-      margin: 60px auto;
-      padding: 25px;
+      max-width: 1100px;
+      width: 100%;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    /* === Header === */
+    header {
       text-align: center;
+      margin-bottom: 30px;
     }
 
-    h1 {
+    header .logo-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+
+    header .logo-row img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      object-fit: cover;
+      transition: transform 0.4s;
+    }
+
+    header .logo-row img:hover {
+      transform: scale(1.1);
+    }
+
+    header h1 {
       font-size: 2.4em;
-      color: #fff;
       font-weight: 700;
-      margin-bottom: 10px;
+      color: #fff;
     }
 
-    p.subtitle {
-      color: var(--text-light);
-      font-size: 1.1em;
-      margin-bottom: 40px;
+    header p {
+      font-size: 1.05em;
+      color: var(--light);
     }
 
+    /* === Input Section === */
     .input-section {
       background: var(--card);
-      padding: 25px;
       border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      text-align: left;
+      padding: 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      margin-top: 25px;
+      transition: all 0.4s;
+    }
+
+    .input-section:hover {
+      box-shadow: 0 6px 25px rgba(0,0,0,0.4);
     }
 
     label {
-      font-size: 1.2em;
+      display: block;
       font-weight: 600;
       margin-bottom: 10px;
-      display: block;
+      font-size: 1.2em;
     }
 
     textarea {
       width: 100%;
-      height: 320px; /* Increased size for large text */
+      height: 320px;
+      padding: 15px;
+      border-radius: 10px;
       border: none;
       outline: none;
-      border-radius: 10px;
-      padding: 15px;
       font-size: 1em;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255,255,255,0.1);
       color: #fff;
       resize: vertical;
     }
 
     textarea::placeholder {
-      color: #c8d0e0;
+      color: #b8c2d6;
     }
 
     button {
-      margin-top: 20px;
+      margin-top: 18px;
+      padding: 12px 30px;
       background: var(--accent);
       border: none;
-      padding: 12px 30px;
-      border-radius: 10px;
-      font-size: 1em;
       color: #fff;
+      border-radius: 10px;
+      font-size: 1.05em;
       cursor: pointer;
-      transition: background 0.3s;
+      font-weight: 600;
+      transition: all 0.3s;
     }
 
     button:hover {
-      background: #005fd1;
+      background: #008fd1;
+      transform: scale(1.05);
     }
 
     .result-section {
       margin-top: 25px;
+      background: rgba(255,255,255,0.08);
       padding: 15px;
       border-radius: 12px;
-      background: rgba(255, 255, 255, 0.08);
+      text-align: center;
       font-size: 1.2em;
       font-weight: 500;
     }
 
     .tip {
-      font-size: 0.9em;
-      color: #aebcd0;
-      margin-top: 15px;
       text-align: center;
+      color: var(--light);
+      margin-top: 12px;
+      font-size: 0.9em;
     }
 
-    /* About Section */
+    /* === About Section === */
     .about {
-      margin-top: 60px;
       background: var(--card);
       border-radius: 15px;
+      margin-top: 60px;
       padding: 30px;
-      text-align: left;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+      line-height: 1.7;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.3);
     }
 
     .about h2 {
       font-size: 1.6em;
       margin-bottom: 15px;
-      color: #fff;
     }
 
     .about p {
-      color: var(--text-light);
-      line-height: 1.7;
+      color: var(--light);
       font-size: 1.05em;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .main-about-img {
+      display: block;
+      margin: 25px auto 10px auto;
+      width: 85%;
+      max-width: 650px;
+      border-radius: 15px;
+      border: 2px solid rgba(255,255,255,0.2);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      transition: transform 0.4s;
+    }
+
+    .main-about-img:hover {
+      transform: scale(1.02);
+    }
+
+    .img-caption {
+      text-align: center;
+      color: #9db0d6;
+      font-size: 0.9em;
+      margin-bottom: 25px;
     }
 
     .img-row {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
-      flex-wrap: wrap;
-      margin-top: 15px;
     }
 
     .img-row img {
@@ -149,53 +217,61 @@
     }
 
     footer {
-      margin-top: 50px;
+      text-align: center;
+      margin-top: 40px;
       font-size: 1em;
-      color: #d0d8e8;
-      line-height: 1.6;
+      color: var(--light);
     }
 
     footer strong {
       color: #fff;
-      font-size: 1.05em;
+    }
+
+    @media (max-width: 600px) {
+      textarea {
+        height: 250px;
+      }
+      header h1 {
+        font-size: 1.9em;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h1>🧠 AI Fake News Detector</h1>
-    <p class="subtitle">Detect misinformation using Machine Learning and Natural Language Processing</p>
+    <header>
+      <div class="logo-row">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Student Logo">
+        <img src="https://cdn-icons-png.flaticon.com/512/9774/9774094.png" alt="AI Fake News Icon">
+      </div>
+      <h1>AI Fake News Detector</h1>
+      <p>Detect misinformation using Machine Learning and Natural Language Processing</p>
+    </header>
 
     <div class="input-section">
       <label for="news">Paste your full news article or paragraph below:</label>
       <textarea id="news" placeholder="Paste or type your article text here..."></textarea>
       <button id="detectBtn">Detect</button>
       <div id="result" class="result-section"></div>
-      <p class="tip">You can paste long articles (even 20,000+ words) — the AI model will analyze and predict authenticity.</p>
+      <p class="tip">You can paste long articles (even 20,000+ words) — AI will analyze and predict authenticity with confidence.</p>
     </div>
 
-    <div class="about">
+    <section class="about">
       <h2>📘 About this Demo</h2>
-      <p>
-        This AI-powered application predicts whether a given news article is <strong>real</strong> or <strong>fake</strong>
-        using advanced Natural Language Processing (NLP) techniques. The model is trained on a large dataset of verified
-        and misleading news samples using <strong>TF-IDF Vectorization</strong> and <strong>Logistic Regression</strong>.
-      </p>
-      <p>
-        The system analyzes linguistic patterns, writing tone, and contextual cues to identify potential misinformation.
-        It provides a clear label with a confidence percentage, ensuring users understand the reliability of each prediction.
-      </p>
-      <p>
-        Developed by <strong>Pratima Sahu</strong> as part of her academic journey in <strong>B.Tech EEIOT (Batch: 2023–27)</strong>,
-        this project demonstrates how Artificial Intelligence can be applied to promote truth verification and digital awareness.
-      </p>
+      <p>This AI-powered application determines whether a news article is <strong>real</strong> or <strong>fake</strong> using advanced Natural Language Processing (NLP). The model is trained on thousands of verified and false news samples using <strong>TF-IDF Vectorization</strong> and <strong>Logistic Regression</strong>.</p>
+      <p>The system analyzes linguistic patterns, writing tone, and contextual cues to identify potential misinformation. It provides a clear label with a confidence score, enabling transparent and reliable interpretation of the result.</p>
+      <p>Developed by <strong>Pratima Sahu</strong> — <strong>B.Tech EEIOT (Batch: 2023–27)</strong>. This project exemplifies how Artificial Intelligence can be used to promote truth verification, critical thinking, and digital literacy.</p>
+
+      <img class="main-about-img" src="https://cdn.pixabay.com/photo/2021/04/06/06/26/ai-6154653_960_720.jpg" alt="AI verifying news">
+      <p class="img-caption">AI-driven model analyzing linguistic and contextual cues to detect misinformation</p>
 
       <div class="img-row">
-        <img src="https://cdn.pixabay.com/photo/2019/04/29/13/26/fake-news-4165717_960_720.jpg" alt="Fake news concept">
+        <img src="https://cdn.pixabay.com/photo/2019/04/29/13/26/fake-news-4165717_960_720.jpg" alt="Fake news example">
         <img src="https://cdn.pixabay.com/photo/2018/01/11/19/27/fake-3071842_960_720.jpg" alt="AI analyzing text">
         <img src="https://cdn.pixabay.com/photo/2022/10/09/10/34/ai-7509091_960_720.jpg" alt="Artificial Intelligence">
       </div>
-    </div>
+    </section>
 
     <footer>
       <strong>Pratima Sahu</strong><br>
@@ -219,11 +295,7 @@
         const formData = new FormData();
         formData.append("news", newsText);
 
-        const response = await fetch("/predict", {
-          method: "POST",
-          body: formData
-        });
-
+        const response = await fetch("/predict", { method: "POST", body: formData });
         const data = await response.json();
 
         if (data.error) {
@@ -239,4 +311,5 @@
   </script>
 </body>
 </html>
+
 

@@ -80,21 +80,12 @@
       align-items: flex-start;
     }
 
-    .left {
-      flex: 1.1;
-      min-width: 300px;
-    }
-
-    .right {
-      flex: 0.9;
-      min-width: 260px;
-    }
+    .left { flex: 1.1; min-width: 300px; }
+    .right { flex: 0.9; min-width: 260px; }
 
     textarea#news {
       width: 100%;
-      min-height: 400px;     /* bada area for large text */
-      max-height: 700px;     /* prevent full page takeover */
-      overflow-y: scroll;    /* scrollbar for long articles */
+      min-height: 190px;
       padding: 14px;
       resize: vertical;
       border-radius: 12px;
@@ -103,8 +94,7 @@
       color: #fff;
       font-size: 1rem;
       outline: none;
-      word-wrap: break-word;  /* long lines wrap karenge */
-}
+    }
 
     .btn {
       display: inline-block;
@@ -289,10 +279,10 @@
     </footer>
   </div>
 
-  <!-- JS Logic for AJAX Detection -->
+  <!-- JS Logic -->
   <script>
     async function detectFakeNews(event) {
-      event.preventDefault(); // stop page reload
+      event.preventDefault();
       const text = document.getElementById("news").value.trim();
       const resultDiv = document.getElementById("liveResult");
 
@@ -300,15 +290,25 @@
         resultDiv.innerHTML = "<div class='result fake'>⚠️ Please enter some text!</div>";
         return;
       }
+      if (text.length > 20000) {
+        resultDiv.innerHTML = "<div class='result fake'>⚠️ Text too long! Paste shorter news content.</div>";
+        return;
+      }
 
       resultDiv.innerHTML = "<div class='result' style='background:rgba(255,255,255,0.05);'>⏳ Analyzing...</div>";
 
       try {
-        const res = await fetch("/predict", {
+        const apiURL = window.location.origin + "/predict";
+        const res = await fetch(apiURL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text })
         });
+
+        if (!res.ok) {
+          const textResponse = await res.text();
+          throw new Error(`Server Error ${res.status}: ${textResponse}`);
+        }
 
         const data = await res.json();
 
